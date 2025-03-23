@@ -1,0 +1,24 @@
+# Roadmap
+- ## Milestone 1:
+    - STL import
+    - STEP import
+    - Model rendering
+    - Scene camera movement
+- ## Milestone 2:
+    - Tool Library
+    - Workpiece options
+        - size
+        - shape
+    - NoGo zones (Zones where the bit can't go, clamps for example)
+    - Spindle Dimensions and rendering
+    - Workplace dimensions
+- ## Milestone 3:
+    - 3D Milling-Path Solving for end-mill bits
+- ## Milestone 4:
+    - Support for:
+        - Surfacing bits
+        - V-bits
+- ## Milestone 5:
+    - 4D Solving
+- ## Milestone 6:
+    - 5D Solving
