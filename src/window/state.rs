@@ -3,12 +3,12 @@ use winit::{event::WindowEvent, window::Window};
 
 
 pub struct State<'a> {
-    surface:    wgpu::Surface<'a>,
-    device:     wgpu::Device,
-    queue:      wgpu::Queue,
-    config:     wgpu::SurfaceConfiguration,
-    size:       winit::dpi::PhysicalSize<u32>,
-    window:     &'a Window,
+    pub surface:    wgpu::Surface<'a>,
+    pub device:     wgpu::Device,
+    pub queue:      wgpu::Queue,
+    pub config:     wgpu::SurfaceConfiguration,
+    pub size:       winit::dpi::PhysicalSize<u32>,
+    pub window:     &'a Window,
 }
 
 impl<'a> State<'a>{
@@ -74,19 +74,52 @@ impl<'a> State<'a>{
         &self.window
     }
 
-    fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>){
-        todo!()
+    pub fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>){
+        if new_size.width > 0 && new_size.height > 0{
+            self.size = new_size;
+            self.config.width = new_size.width;
+            self.config.height = new_size.height;
+            self.surface.configure(&self.device, &self.config);
+        }
     }
 
-    fn input(&mut self, event: &WindowEvent) -> bool{
-        todo!()
+    pub fn input(&mut self, _event: &WindowEvent) -> bool{
+        // TODO: add input methods
+        false
     }
 
-    fn update(&mut self){
-        todo!()
+    pub fn update(&mut self){
+        // TODO
     }
 
-    fn render(&mut self) -> Result<(), wgpu::SurfaceError>{
-        todo!()
+    pub fn render(&mut self) -> Result<(), wgpu::SurfaceError>{
+        let output = self.surface.get_current_texture()?;
+        let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
+
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor{
+            label: Some("Render Encoder"),
+        });
+
+        {
+            let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
+                label: Some("Render Pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment{
+                    view: &view,
+                    resolve_target: None,
+                    ops: wgpu::Operations{
+                        load: wgpu::LoadOp::Clear(wgpu::Color { r: 0.1, g: 0.2, b: 0.3, a: 1.0 }),
+                        store: wgpu::StoreOp::Store,
+                    }
+                })],
+                depth_stencil_attachment: None,
+                occlusion_query_set: None,
+                timestamp_writes: None,
+            });
+        }
+
+        self.queue.submit(std::iter::once(encoder.finish()));
+        output.present();
+
+        Ok(())
     }
 }
